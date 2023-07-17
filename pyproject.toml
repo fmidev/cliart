@@ -25,6 +25,7 @@ classifiers = [
 ]
 dependencies = [
   "click",
+  "radproc @ git+https://github.com/fmidev/radproc.git",
 ]
 dynamic = ["version"]
 
