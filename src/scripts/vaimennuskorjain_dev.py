@@ -6,9 +6,13 @@ from radproc.io import read_h5
 
 
 if __name__ == '__main__':
-    fname = os.path.expanduser('~/data/pvol/202208132125_fivih_PVOL.h5')
-    radar = read_h5(fname)
+    #fname = os.path.expanduser('~/data/pvol/202208132125_fivih_PVOL.h5')
+    fname = os.path.expanduser('~/data/pvol/202206030010_fivih_PVOL.h5')
+    radar = read_h5(fname, file_field_names=True)
     a_coef, beta, c, d = _param_attzphi_table()['C']
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
+    namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDP')
     _, _, cor_z, _, _, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
-        refl_field='reflectivity_horizontal', **attnparams)
+         temp_ref='fixed_fzl', **namekws, **attnparams)
+    radar.add_field('DBZHA', cor_z)
+    radar.add_field('ZDRA', cor_zdr)
