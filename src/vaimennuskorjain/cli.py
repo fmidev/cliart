@@ -2,7 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 import click
+import pyart.aux_io
 
+from vaimennuskorjain import correct_attenuation
 from vaimennuskorjain._version import __version__
 
 
@@ -14,4 +16,5 @@ from vaimennuskorjain._version import __version__
 @click.version_option(version=__version__, prog_name='vaimennuskorjain')
 def vaimennuskorjain(inputfile, output_file):
     """Perform attenuation correction on INPUTFILE."""
-    pass
+    radar = correct_attenuation(inputfile)
+    pyart.aux_io.write_odim_h5(output_file, radar)
