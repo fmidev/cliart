@@ -12,9 +12,11 @@ def correct_attenuation(infile, band='C'):
     a_coef, beta, c, d = _param_attzphi_table()[band]
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDP')
-    _, _, cor_z, _, _, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
+    spec, pia, cor_z, specd, pida, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
          temp_ref='fixed_fzl', **namekws, **attnparams)
     radar.add_field('DBZHA', cor_z)
+    #radar.add_field('PIA', pia)
+    #radar.add_field('SPEC', spec)
     radar.add_field('ZDRA', cor_zdr)
     if radar.ray_angle_res is None:
         radar.ray_angle_res = {'data': 360/radar.rays_per_sweep['data']}
