@@ -13,8 +13,9 @@ from vaimennuskorjain._version import __version__
                                              readable=True))
 @click.option('-o', '--output-file', type=click.Path(dir_okay=False),
               help='output HDF5 file path',  metavar='PATH')
+@click.option('--ml', metavar='HEIGHT', help='melting layer height in meters', type=float)
 @click.version_option(version=__version__, prog_name='vaimennuskorjain')
-def vaimennuskorjain(inputfile, output_file):
+def vaimennuskorjain(inputfile, output_file, ml):
     """Perform attenuation correction on INPUTFILE."""
-    radar = correct_attenuation(inputfile)
+    radar = correct_attenuation(inputfile, ml)
     pyart.aux_io.write_odim_h5(output_file, radar)
