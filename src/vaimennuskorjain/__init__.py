@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2023-present Jussi Tiira <jussi.tiira@fmi.fi>
 #
 # SPDX-License-Identifier: MIT
+import h5py
 import pyart.correct
 from pyart.correct.attenuation import _param_attzphi_table
 from scipy.signal import savgol_filter
@@ -9,7 +10,10 @@ from radproc.io import read_h5
 from radproc.filtering import filter_field
 
 
-def correct_attenuation(infile, ml=3000, band='C', **kws):
+def correct_attenuation(infile, ml=None, band='C', **kws):
+    if ml is None:
+        with h5py.File(infile) as f:
+            ml = f['how'].attrs['freeze']*1000
     radar = read_h5(infile, file_field_names=True)
     a_coef, beta, c, d = _param_attzphi_table()[band]
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
@@ -20,6 +24,7 @@ def correct_attenuation(infile, ml=3000, band='C', **kws):
     radar.add_field('PIA', pia)
     radar.add_field('SPEC', spec)
     radar.add_field('ZDRA', cor_zdr)
+    smoothen_atten_cor(radar)
     if radar.ray_angle_res is None:
         # TODO: open issue on github
         # TODO: check the correct resolution

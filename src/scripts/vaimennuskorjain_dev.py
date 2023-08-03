@@ -1,9 +1,7 @@
 import os
 
-import h5py
 import pyart
 import matplotlib.pyplot as plt
-from scipy.ndimage import median_filter
 
 from vaimennuskorjain import correct_attenuation, smoothen_atten_cor
 
@@ -15,10 +13,7 @@ if __name__ == '__main__':
     #fname = os.path.expanduser('~/data/pvol/202307030835_fivih_PVOL.h5')
     #fname = os.path.expanduser('~/data/pvol/202307010920_fivih_PVOL.h5')
     fname = os.path.expanduser('~/data/polar/fivan/201708121600_radar.polar.fivan.h5')
-    with h5py.File(fname) as f:
-        ml = f['how'].attrs['freeze']*1000
-    radar = correct_attenuation(fname, ml=ml, smooth_window_len=6)
-    smoothen_atten_cor(radar)
+    radar = correct_attenuation(fname, smooth_window_len=6)
     figz, axz = plt.subplots(nrows=2, ncols=3, figsize=(18, 12), dpi=120)
     display = pyart.graph.RadarDisplay(radar)
     zmax = 50

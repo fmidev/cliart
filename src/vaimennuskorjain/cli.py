@@ -13,9 +13,12 @@ from vaimennuskorjain._version import __version__
                                              readable=True))
 @click.option('-o', '--output-file', type=click.Path(dir_okay=False),
               help='output HDF5 file path',  metavar='PATH')
-@click.option('--ml', metavar='HEIGHT', help='melting layer height in meters', type=float)
+@click.option('--ml', metavar='HEIGHT', help='override melting layer height [meters]', type=float)
 @click.version_option(version=__version__, prog_name='vaimennuskorjain')
 def vaimennuskorjain(inputfile, output_file, ml):
-    """Perform attenuation correction on INPUTFILE."""
+    """Perform attenuation correction on INPUTFILE.
+
+    Py-ART calculate_attenuation_zphi is used under the hood.
+    Melting layer height is read from the HDF5 attribute how/freeze."""
     radar = correct_attenuation(inputfile, ml)
     pyart.aux_io.write_odim_h5(output_file, radar)
