@@ -23,8 +23,11 @@ def correct_attenuation(infile, ml=None, band='C', **kws):
     radar.add_field('DBZHA', cor_z)
     radar.add_field('PIA', pia)
     radar.add_field('SPEC', spec)
+    radar.add_field('PIDA', pida)
     radar.add_field('ZDRA', cor_zdr)
-    smoothen_atten_cor(radar)
+    smoothen_attn_cor(radar)
+    smoothen_attn_cor(radar, pia_field='PIDA', src_field='ZDR',
+                      template_field='ZDRA', dest_field='ZDRB')
     if radar.ray_angle_res is None:
         # TODO: open issue on github
         # TODO: check the correct resolution
@@ -32,7 +35,9 @@ def correct_attenuation(infile, ml=None, band='C', **kws):
     return radar
 
 
-def smoothen_atten_cor(radar):
-    filter_field(radar, 'PIA', filterfun=savgol_filter, axis=0, window_length=6, polyorder=3)
-    data = radar.fields['DBZH']['data']+radar.fields['PIA_filtered']['data']
-    radar.add_field_like('DBZHA', 'DBZHB', data=data, replace_existing=True)
+def smoothen_attn_cor(radar, pia_field='PIA', src_field='DBZH',
+                      template_field='DBZHA', dest_field='DBZHB'):
+    """angular smooting on attenuation correction"""
+    filter_field(radar, pia_field, filterfun=savgol_filter, axis=0, window_length=6, polyorder=3)
+    data = radar.fields[src_field]['data']+radar.fields[pia_field+'_filtered']['data']
+    radar.add_field_like(template_field, dest_field, data=data, replace_existing=True)
