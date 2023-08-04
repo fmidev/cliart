@@ -17,11 +17,11 @@ if __name__ == '__main__':
     figz, axz = plt.subplots(nrows=2, ncols=3, figsize=(18, 12), dpi=120)
     figd, axd = plt.subplots(nrows=2, ncols=3, figsize=(18, 12), dpi=120)
     display = pyart.graph.RadarDisplay(radar)
-    zmax = 50
-    display.plot('DBZHC', sweep=0, ax=axz[0,0], vmin=0, vmax=zmax, cmap='viridis')
-    display.plot('DBZHA', sweep=0, ax=axz[0,1], vmin=0, vmax=zmax, cmap='viridis')
-    display.plot('DBZHB', sweep=0, ax=axz[0,2], vmin=0, vmax=zmax, cmap='viridis')
-    display.plot('DBZH', sweep=0, ax=axz[1,0], vmin=0, vmax=zmax, cmap='viridis')
+    zkws = dict(vmin=0, vmax=50, cmap='viridis')
+    display.plot('DBZHC', sweep=0, ax=axz[0,0], **zkws)
+    display.plot('DBZHA', sweep=0, ax=axz[0,1], **zkws)
+    display.plot('DBZHB', sweep=0, ax=axz[0,2], **zkws)
+    display.plot('DBZH', sweep=0, ax=axz[1,0], **zkws)
     display.plot('PHIDP', sweep=0, ax=axz[1,1], vmin=0, vmax=350)
     display.plot('ZDR', sweep=0, ax=axz[1,2], vmin=-3, vmax=2)
     figz.tight_layout()
@@ -34,4 +34,5 @@ if __name__ == '__main__':
     display.plot('PIDA_filtered', sweep=0, ax=axd[1,2], vmin=0, vmax=6)
     figd.tight_layout()
     #print(radar.fields['SPEC']['data'].max())
-    pyart.aux_io.write_odim_h5('/tmp/rad.h5', radar)
+    fout = '/tmp/rad.h5'
+    pyart.aux_io.write_odim_h5(fout, radar)
