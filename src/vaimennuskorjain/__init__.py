@@ -10,6 +10,15 @@ from radproc.io import read_h5
 from radproc.filtering import filter_field
 
 
+def insect_filter(radar):
+    gf = pyart.correct.GateFilter(radar)
+    gf.exclude_below('DBZH', 10)
+    gf.exclude_above('ZDR', 2, op='and')
+    gf.exclude_below('DBZH', 1)
+    gf.exclude_below('RHOHV', 0.8)
+    return gf
+
+
 def correct_attenuation(infile, ml=None, band='C', **kws):
     if ml is None:
         with h5py.File(infile) as f:
@@ -19,7 +28,8 @@ def correct_attenuation(infile, ml=None, band='C', **kws):
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDP')
     spec, pia, cor_z, specd, pida, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
-         temp_ref='fixed_fzl', fzl=ml, doc=20, **namekws, **attnparams, **kws)
+         temp_ref='fixed_fzl', fzl=ml, doc=5, gatefilter=insect_filter(radar),
+         **namekws, **attnparams, **kws)
     radar.add_field('DBZHA', cor_z)
     radar.add_field('PIA', pia)
     radar.add_field('SPEC', spec)
