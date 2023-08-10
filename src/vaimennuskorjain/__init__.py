@@ -10,7 +10,7 @@ from radproc.io import read_h5
 from radproc.filtering import filter_field
 
 
-def insect_filter(radar):
+def nonmet_filter(radar):
     gf = pyart.correct.GateFilter(radar)
     gf.exclude_below('DBZH', 10)
     gf.exclude_above('ZDR', 2, op='and')
@@ -28,7 +28,7 @@ def correct_attenuation(infile, ml=None, band='C', **kws):
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDP')
     spec, pia, cor_z, specd, pida, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
-         temp_ref='fixed_fzl', fzl=ml, doc=5, gatefilter=insect_filter(radar),
+         temp_ref='fixed_fzl', fzl=ml, doc=15, gatefilter=nonmet_filter(radar),
          **namekws, **attnparams, **kws)
     radar.add_field('DBZHA', cor_z)
     radar.add_field('PIA', pia)
@@ -38,10 +38,6 @@ def correct_attenuation(infile, ml=None, band='C', **kws):
     smoothen_attn_cor(radar)
     smoothen_attn_cor(radar, pia_field='PIDA', src_field='ZDR',
                       template_field='ZDRA', dest_field='ZDRB')
-    if radar.ray_angle_res is None:
-        # TODO: open issue on github
-        # TODO: check the correct resolution
-        radar.ray_angle_res = {'data': 360/radar.rays_per_sweep['data']}
     return radar
 
 
