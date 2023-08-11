@@ -22,17 +22,16 @@ def animate(frame, plot_cb=False):
     display.plot_ppi('DBZHC', sweep=0, ax=axz[0,0], **zkws, **kws, title='DBZ corrected Vaisala')
     display.plot_ppi('DBZHA', sweep=0, ax=axz[0,1], **zkws, **kws, title='DBZ corrected pyart')
     display.plot_ppi('DBZHB', sweep=0, ax=axz[0,2], **zkws, **kws, title='DBZ corrected pyart smoothed')
-    display.plot_ppi('DBZH', sweep=0, ax=axz[1,0], **zkws, **kws, title='DBZ')
-    display.plot_ppi('PHIDP', sweep=0, ax=axz[1,1], vmin=0, vmax=360, cmap='pyart_Wild25', **kws, title='PHIDP')
-    display.plot_ppi('ZDR', sweep=0, ax=axz[1,2], vmin=-3, vmax=3, cmap='pyart_ChaseSpectral', **kws, title='ZDR')
+    display.plot_ppi('DBZH', sweep=0, ax=axz[1,0], **zkws, **kws)
+    display.plot_ppi('PHIDP', sweep=0, ax=axz[1,1], vmin=0, vmax=360, cmap='pyart_Wild25', **kws)
+    display.plot_ppi('ZDR', sweep=0, ax=axz[1,2], vmin=-3, vmax=3, cmap='pyart_ChaseSpectral', **kws)
     figz.tight_layout()
 
 
 if __name__ == '__main__':
     rcase = '20170321'
-    rcase = '20230808'
+    rcase = '20230807'
     site = 'fikor'
-    patt = os.path.expanduser(f'~/data/polar/{site}/{rcase}*_radar.polar.{site}.h5')
     patt = os.path.expanduser(f'~/data/polar/{site}/{rcase}*_radar.polar.{site}.h5')
     ls = glob.glob(patt)
     figz, axz = plt.subplots(nrows=2, ncols=3, figsize=(18, 10), dpi=80)
