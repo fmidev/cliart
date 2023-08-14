@@ -1,6 +1,7 @@
 import os
 import glob
 
+import numpy as np
 import pyart
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -35,10 +36,13 @@ def animate(frame, plot_cb=False):
 if __name__ == '__main__':
     rcase = '20170812'
     #rcase = '20230807'
-    site = 'fikor'
+    site = 'fivan'
     patt = os.path.expanduser(f'~/data/polar/{site}/{rcase}*_radar.polar.{site}.h5')
     ls = sorted(glob.glob(patt))
-    figz, axz = plt.subplots(nrows=3, ncols=3, figsize=(18, 15), dpi=80)
+    figsize = (18, 15)
+    target_resolution = (1920, 1080)
+    dpi = np.divide(target_resolution, figsize).min()
+    figz, axz = plt.subplots(nrows=3, ncols=3, figsize=figsize, dpi=dpi)
     animate(0, plot_cb=True)
     anim = animation.FuncAnimation(figz, animate, frames=len(ls))
     resultsdir = os.path.expanduser('~/results/vaimennus')
