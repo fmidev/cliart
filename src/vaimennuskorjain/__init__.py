@@ -25,7 +25,7 @@ def phidp_base0(radar):
     radar.add_field_like('PHIDP', 'PHIDPA', phidp_corr, replace_existing=True)
 
 
-def nonmet_filter(radar, rhohv_min=0.8, z_min=0.5):
+def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
     gf = pyart.correct.GateFilter(radar)
     gf.exclude_below('DBZH', 10)
     gf.exclude_above('ZDR', 2, op='and')
