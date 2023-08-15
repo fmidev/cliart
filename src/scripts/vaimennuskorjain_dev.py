@@ -1,9 +1,11 @@
+"""script for zisualizing attenuation correction"""
+
 import os
 
 import pyart
 import matplotlib.pyplot as plt
 
-from vaimennuskorjain import correct_attenuation
+from vaimennuskorjain import correct_attenuation_zphi
 
 
 if __name__ == '__main__':
@@ -16,7 +18,7 @@ if __name__ == '__main__':
     #fname = os.path.expanduser('~/data/polar/fikor/202308071610_radar.polar.fikor.h5')
     #fname = os.path.expanduser('~/data/polar/fikor/202308080540_radar.polar.fikor.h5')
     fname = os.path.expanduser('~/data/polar/fikor/202308080405_radar.polar.fikor.h5')
-    radar = correct_attenuation(fname, smooth_window_len=6)
+    radar = correct_attenuation_zphi(fname, smooth_window_len=6)
     figz, axz = plt.subplots(nrows=3, ncols=3, figsize=(17, 17), dpi=110, sharex=True, sharey=True)
     figd, axd = plt.subplots(nrows=2, ncols=3, figsize=(18, 12), dpi=120, sharex=True, sharey=True)
     display = pyart.graph.RadarDisplay(radar)

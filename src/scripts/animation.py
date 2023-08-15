@@ -1,3 +1,5 @@
+"""animated attenuation correction visualization"""
+
 import os
 import glob
 
@@ -6,7 +8,7 @@ import pyart
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
-from vaimennuskorjain import correct_attenuation
+from vaimennuskorjain import correct_attenuation_zphi
 
 colorbar_present = False
 
@@ -16,7 +18,7 @@ def animate(frame, plot_cb=False):
     for ax in axz.flatten():
         ax.cla()
     fname = ls[frame]
-    radar = correct_attenuation(fname, smooth_window_len=6)
+    radar = correct_attenuation_zphi(fname, smooth_window_len=6)
     display = pyart.graph.RadarDisplay(radar)
     zkws = dict(vmin=0, vmax=50, cmap='pyart_HomeyerRainbow')
     piakws = dict(vmin=0, vmax=12, cmap='gnuplot2_r')

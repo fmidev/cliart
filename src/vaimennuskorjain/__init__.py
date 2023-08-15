@@ -13,7 +13,7 @@ from vaimennuskorjain._version import __version__
 
 
 def phidp_base0(radar):
-    """Add shifted and filtered phidp field."""
+    """shifted and filtered phidp field that starts from zero degrees"""
     gf = nonmet_filter(radar, rhohv_min=0.9)
     phidp_corr = radar.fields['PHIDP']['data'].copy()
     phidp_valid = phidp_corr.copy()
@@ -26,6 +26,7 @@ def phidp_base0(radar):
 
 
 def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
+    """GateFilter for some non-meteorological targets, especially insects."""
     gf = pyart.correct.GateFilter(radar)
     gf.exclude_below('DBZH', 10)
     gf.exclude_above('ZDR', 2, op='and')
@@ -34,8 +35,9 @@ def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
     return gf
 
 
-def correct_attenuation(infile, ml=None, band='C', **kws):
-    if ml is None:
+def correct_attenuation_zphi(infile, ml=None, band='C', **kws):
+    """attenuation correction using PyART zphi implementation"""
+    if ml is None: # read melting layer height from how/freeze h5-attribute
         with h5py.File(infile) as f:
             ml = f['how'].attrs['freeze']*1000
     radar = read_h5(infile, file_field_names=True)
