@@ -25,10 +25,11 @@ def animate(frame, plot_cb=False):
     piakws = dict(vmin=0, vmax=12, cmap='gnuplot2_r')
     kws = dict(colorbar_flag=plot_cb, sweep=0, resolution='50m', add_grid_lines=False)
     plotfun = display.plot_ppi_map
-    plotfun('DBZHC', ax=axz[0,0], **zkws, **kws, title='DBZ corrected Vaisala')
-    plotfun('DBZHA', ax=axz[0,1], **zkws, **kws, title='DBZ corrected ZPhi')
-    plotfun('DBZHB', ax=axz[0,2], **zkws, **kws, title='DBZ corrected ZPhi smoothed')
-    plotfun('DBZH', ax=axz[1,0], **zkws, **kws)
+    plotfun('DBZHC', ax=axz[0,0], **zkws, **kws, title='corrected DBZ, Vaisala (DBZHC)',
+            colorbar_label='corrected equivalent reflectivity factor (dBZ)')
+    plotfun('DBZHA', ax=axz[0,1], **zkws, **kws, title='corrected DBZ, ZPhi')
+    plotfun('DBZHB', ax=axz[0,2], **zkws, **kws, title='corrected DBZ, ZPhi smoothed')
+    plotfun('DBZH', ax=axz[1,0], **zkws, **kws, colorbar_label='equivalent reflectivity factor (dBZ)')
     plotfun('PIA', ax=axz[1,1], **piakws, **kws)
     plotfun('PIA_filtered', ax=axz[1,2], **piakws, **kws)
     try:
