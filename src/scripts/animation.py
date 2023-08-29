@@ -3,28 +3,15 @@
 import os
 import glob
 
-import numpy as np
 import pyart
 import matplotlib.pyplot as plt
 from matplotlib import animation
-import cartopy.crs as ccrs
 from functools import partial
 
 from vaimennuskorjain import correct_attenuation_zphi
+from radproc.visual import canvas
 
 colorbar_present = False
-
-
-def canvas(*colsrows, target_resolution=(1920, 1080)):
-    figsize = np.multiply(colsrows, (6,5))
-    dpi = np.divide(target_resolution, figsize).min()
-    proj = ccrs.LambertConformal(central_latitude=radar.latitude["data"][0],
-                                 central_longitude=radar.longitude["data"][0])
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=figsize, dpi=dpi,
-                           sharex=True, sharey=True,
-                           subplot_kw={'projection': proj})
-    fig.subplots_adjust(left=0, bottom=0.02, right=1, top=0.96, wspace=0, hspace=None)
-    return fig, ax
 
 
 def plot_atten(display, axarr, plot_cb=False):
@@ -67,7 +54,7 @@ if __name__ == '__main__':
     patt = os.path.expanduser(f'~/data/polar/{site}/{rcase}*_radar.polar.{site}.h5')
     ls = sorted(glob.glob(patt))
     radar = pyart.aux_io.read_odim_h5(ls[0], include_datasets=['dataset1'])
-    figz, axz = canvas(3, 2)
+    figz, axz = canvas(radar, 3, 2)
     animate(0, axz, plot_cb=True)
     anim = partial(animate, axarr=axz)
     anim = animation.FuncAnimation(figz, anim, frames=len(ls))
@@ -76,6 +63,6 @@ if __name__ == '__main__':
     anim.save(os.path.join(resultsdir, site+rcase+'.gif'), writer='pillow', fps=1)
     plt.close(figz)
     #
-    fig, axs = canvas(3, 2)
+    fig, axs = canvas(radar, 3, 2)
     animate(9, axs, plot_cb=True)
     fig.savefig(os.path.join(resultsdir, site+rcase+'.png'))
