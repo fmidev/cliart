@@ -36,8 +36,8 @@ if __name__ == '__main__':
     radar.add_field('P', rfield(p.sum(axis=0)/12))
     radar.add_field('PC', rfield(pc.sum(axis=0)/12))
     display = pyart.graph.RadarMapDisplay(radar)
-    fig, axs = canvas(radar, 2, 1)
+    #fig, axs = canvas(radar, 2, 1)
     d = 360000
     kws = dict(resolution='50m', add_grid_lines=False, width=d, height=d)
-    display.plot_ppi_map('P', ax=axs[0], vmin=0, vmax=20, **kws)
-    display.plot_ppi_map('PC', ax=axs[1], vmin=0, vmax=20, **kws)
+    #display.plot_ppi_map('P', ax=axs[0], vmin=0, vmax=20, **kws)
+    #display.plot_ppi_map('PC', ax=axs[1], vmin=0, vmax=20, **kws)
