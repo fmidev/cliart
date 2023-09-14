@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from functools import partial
 
-from vaimennuskorjain import correct_attenuation_zphi
+from radproc.io import read_h5
+from vaimennuskorjain import correct_attenuation_zphi, read_odim_ml
 from radproc.visual import canvas
 
 colorbar_present = False
@@ -42,7 +43,9 @@ def animate(frame, axarr, **plotkws):
     for ax in axarr.flatten():
         ax.cla()
     fname = ls[frame]
-    radar = correct_attenuation_zphi(fname, smooth_window_len=6)
+    ml = read_odim_ml(fname)
+    radar = read_h5(fname, ml=ml, file_field_names=True)
+    correct_attenuation_zphi(radar, smooth_window_len=6)
     display = pyart.graph.RadarMapDisplay(radar)
     plot_atten(display, axarr, **plotkws)
 

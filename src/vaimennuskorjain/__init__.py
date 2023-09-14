@@ -7,7 +7,6 @@ import numpy as np
 from pyart.correct.attenuation import _param_attzphi_table
 from scipy.signal import savgol_filter
 
-from radproc.io import read_h5
 from radproc.filtering import filter_field
 from vaimennuskorjain._version import __version__
 
@@ -35,13 +34,16 @@ def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
     return gf
 
 
-def correct_attenuation_zphi(infile, ml=None, band='C', **kws):
+def read_odim_ml(h5file):
+    """Read how/freeze in meters from FMI ODIM HDF5 radar metadata."""
+    with h5py.File(h5file) as f:
+        return f['how'].attrs['freeze']*1000
+
+
+
+def correct_attenuation_zphi(radar, ml=None, band='C', **kws):
     """attenuation correction using PyART zphi implementation"""
-    if ml is None: # read melting layer height from how/freeze h5-attribute
-        with h5py.File(infile) as f:
-            ml = f['how'].attrs['freeze']*1000
-    radar = read_h5(infile, file_field_names=True)
-    phidp_base0(radar)
+    phidp_base0(radar) # TODO: read from metadata when available
     a_coef, beta, c, d = _param_attzphi_table()[band]
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDPA')
@@ -56,7 +58,6 @@ def correct_attenuation_zphi(infile, ml=None, band='C', **kws):
     smoothen_attn_cor(radar)
     smoothen_attn_cor(radar, pia_field='PIDA', smooth_pia_field='PIDAS',
                       src_field='ZDR', template_field='ZDRA', dest_field='ZDRAS')
-    return radar
 
 
 def smoothen_attn_cor(radar, pia_field='PIA', smooth_pia_field='PIAS',
