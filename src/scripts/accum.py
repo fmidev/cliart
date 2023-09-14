@@ -21,7 +21,7 @@ def precips(ls):
     for fname in ls:
         radar = correct_attenuation_zphi(fname, smooth_window_len=6)
         ps.append(z_r_qpe(radar, dbz_field='DBZH', add_field=False)['data'].filled(0))
-        pcs.append(z_r_qpe(radar, dbz_field='DBZHB', add_field=False)['data'].filled(0))
+        pcs.append(z_r_qpe(radar, dbz_field='DBZHAS', add_field=False)['data'].filled(0))
     return np.stack(ps), np.stack(pcs)
 
 

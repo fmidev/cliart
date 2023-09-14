@@ -24,10 +24,10 @@ def plot_atten(display, axarr, plot_cb=False):
             colorbar_label='corrected equivalent reflectivity factor (dBZ)')
     #plotfun('DBZHA', ax=axarr[0,1], **zkws, **kws, title='Corrected DBZ, ZPHI')
     plotfun('SPEC', ax=axarr[1,0], vmin=0, vmax=0.4, **kws, cmap='pyart_Theodore16', title='Specific attenuation')
-    plotfun('DBZHB', ax=axarr[0,1], **zkws, **kws, title='Corrected DBZ, ZPHI')
+    plotfun('DBZHAS', ax=axarr[0,1], **zkws, **kws, title='Corrected DBZ, ZPHI')
     plotfun('DBZH', ax=axarr[0,0], **zkws, **kws, title='Attenuated DBZH', colorbar_label='equivalent reflectivity factor (dBZ)')
     #plotfun('PIA', ax=axarr[1,1], **piakws, **kws)
-    plotfun('PIA_filtered', ax=axarr[1,1], **piakws, **kws)
+    plotfun('PIAS', ax=axarr[1,1], **piakws, **kws)
     plotfun('PHIDPA', ax=axarr[1,2], vmin=0, vmax=360, cmap='pyart_Wild25', **kws, title='PHIDP', colorbar_label='differential phase (dB)')
     try: # plotting third row
         plotfun('SPEC', ax=axarr[2,0], vmin=0, vmax=0.4, **kws, cmap='pyart_Theodore16')
