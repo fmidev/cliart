@@ -5,7 +5,7 @@ import h5py
 import click
 import pyart.aux_io
 
-from vaimennuskorjain import correct_attenuation
+from vaimennuskorjain import correct_attenuation_zphi
 from vaimennuskorjain._version import __version__
 
 
@@ -21,7 +21,7 @@ def vaimennuskorjain(inputfile, output_file, ml):
 
     Py-ART calculate_attenuation_zphi is used under the hood.
     Melting layer height is read from the HDF5 attribute how/freeze."""
-    radar = correct_attenuation(inputfile, ml)
+    radar = correct_attenuation_zphi(inputfile, ml)
     pyart.aux_io.write_odim_h5(output_file, radar)
     with h5py.File(output_file, 'a') as new:
         with h5py.File(inputfile) as old:

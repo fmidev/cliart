@@ -54,14 +54,16 @@ def correct_attenuation_zphi(infile, ml=None, band='C', **kws):
     radar.add_field('PIDA', pida)
     radar.add_field('ZDRA', cor_zdr)
     smoothen_attn_cor(radar)
-    smoothen_attn_cor(radar, pia_field='PIDA', src_field='ZDR',
-                      template_field='ZDRA', dest_field='ZDRB')
+    smoothen_attn_cor(radar, pia_field='PIDA', smooth_pia_field='PIDAS',
+                      src_field='ZDR', template_field='ZDRA', dest_field='ZDRAS')
     return radar
 
 
-def smoothen_attn_cor(radar, pia_field='PIA', src_field='DBZH',
-                      template_field='DBZHA', dest_field='DBZHB'):
+def smoothen_attn_cor(radar, pia_field='PIA', smooth_pia_field='PIAS',
+                      src_field='DBZH', template_field='DBZHA',
+                      dest_field='DBZHAS'):
     """angular smooting on attenuation correction"""
-    filter_field(radar, pia_field, filterfun=savgol_filter, axis=0, window_length=6, polyorder=3)
-    data = radar.fields[src_field]['data']+radar.fields[pia_field+'_filtered']['data']
+    filter_field(radar, pia_field, field_name=smooth_pia_field,
+                 filterfun=savgol_filter, axis=0, window_length=6, polyorder=3)
+    data = radar.fields[src_field]['data']+radar.fields[smooth_pia_field]['data']
     radar.add_field_like(template_field, dest_field, data=data, replace_existing=True)
