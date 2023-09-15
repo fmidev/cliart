@@ -11,6 +11,18 @@ from radproc.filtering import filter_field
 from vaimennuskorjain._version import __version__
 
 
+ATTN_FIELDS = {'DBZHA': 'DBZH with attenuation correction',
+               'DBZHAS': 'DBZH with smoothed attenuation correction',
+               'PIA': 'path integrated attenuation',
+               'PIAS': 'smoothed path integrated attenuation',
+               'SPEC': 'specific attenuation',
+               'ZDRA': 'ZDR with attenuation correction',
+               'ZDRAS': 'ZDR with smoothed attenuation correction',
+               'PIDA': 'path integrated differential attenuation',
+               'PIDAS': 'smoothed path integrated differential attenuation',
+               'SPECD': 'specific differential attenuation'}
+
+
 def phidp_base0(radar):
     """shifted and filtered phidp field that starts from zero degrees"""
     gf = nonmet_filter(radar, rhohv_min=0.9)
@@ -55,6 +67,7 @@ def correct_attenuation_zphi(radar, ml=None, band='C', **kws):
     radar.add_field('SPEC', spec)
     radar.add_field('PIDA', pida)
     radar.add_field('ZDRA', cor_zdr)
+    radar.add_field('SPECD', specd)
     smoothen_attn_cor(radar)
     smoothen_attn_cor(radar, pia_field='PIDA', smooth_pia_field='PIDAS',
                       src_field='ZDR', template_field='ZDRA', dest_field='ZDRAS')
