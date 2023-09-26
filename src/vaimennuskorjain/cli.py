@@ -12,11 +12,15 @@ from vaimennuskorjain import correct_attenuation_zphi, read_odim_ml, ATTN_FIELDS
 from vaimennuskorjain._version import __version__
 
 
+def _gen_help(base, variables):
+    varstr = ''.join('\n{}: {}'.format(key, val) for key, val in variables.items())
+    return base+'\n\n\b'+varstr
+
+
 def _field_help():
     base = 'Variable to write. This option can be selected multiple times. '\
         'The default is to write all variables.'
-    fieldstr = ''.join('\n{}: {}'.format(key, val) for key, val in ATTN_FIELDS.items())
-    return base+'\n\n\b'+fieldstr
+    return _gen_help(base, ATTN_FIELDS)
 
 
 def _out_help():
@@ -25,8 +29,7 @@ def _out_help():
     base = 'Output file path. '\
         'Special variables can be used enclosed in curly brackets, e.g. '\
         '/path/to/{site}/file_{timestamp}.h5.'
-    varstr = ''.join('\n{}: {}'.format(key, val) for key, val in variables.items())
-    return base+'\n\n\b'+varstr
+    return _gen_help(base, variables)
 
 
 @click.command()
