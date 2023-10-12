@@ -1,12 +1,10 @@
 # SPDX-FileCopyrightText: 2023-present Jussi Tiira <jussi.tiira@fmi.fi>
 #
 # SPDX-License-Identifier: MIT
-import h5py
 import click
-import pyart.aux_io
 from pyart.graph.common import generate_radar_time_begin
 
-from radproc.io import read_h5
+from radproc.io import read_h5, write_h5
 from radproc.tools import source2dict
 from vaimennuskorjain import correct_attenuation_zphi, read_odim_ml, ATTN_FIELDS
 from vaimennuskorjain._version import __version__
@@ -58,7 +56,4 @@ def vaimennuskorjain(inputfile, output_file, ml, field, orig):
         field = list(radar.fields) + list(field)
     correct_attenuation_zphi(radar, ml)
     outfile = output_file.format(timestamp=tstamp, site=site)
-    pyart.aux_io.write_odim_h5(outfile, radar, field_names=field)
-    with h5py.File(outfile, 'a') as new:
-        with h5py.File(inputfile) as old:
-            new['how'].attrs.update(old['how'].attrs)
+    write_h5(radar, outfile, inputfile=inputfile, field_names=field)
