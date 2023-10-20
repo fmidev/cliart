@@ -4,9 +4,9 @@
 import click
 from pyart.graph.common import generate_radar_time_begin
 
-from radproc.io import read_h5, write_h5
+from radproc.io import read_h5, write_h5, read_odim_ml
 from radproc.tools import source2dict
-from vaimennuskorjain import correct_attenuation_zphi, read_odim_ml, ATTN_FIELDS
+from vaimennuskorjain import correct_attenuation_zphi, ATTN_FIELDS
 from vaimennuskorjain._version import __version__
 
 

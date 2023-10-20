@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2023-present Jussi Tiira <jussi.tiira@fmi.fi>
 #
 # SPDX-License-Identifier: MIT
-import h5py
 import pyart.correct
 import numpy as np
 from pyart.correct.attenuation import _param_attzphi_table
@@ -44,13 +43,6 @@ def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
     gf.exclude_below('DBZH', z_min)
     gf.exclude_below('RHOHV', rhohv_min)
     return gf
-
-
-def read_odim_ml(h5file):
-    """Read how/freeze in meters from FMI ODIM HDF5 radar metadata."""
-    with h5py.File(h5file) as f:
-        return f['how'].attrs['freeze']*1000
-
 
 
 def correct_attenuation_zphi(radar, ml=None, band='C', **kws):
