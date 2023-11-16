@@ -7,6 +7,7 @@ from pyart.correct.attenuation import _param_attzphi_table
 from scipy.signal import savgol_filter
 
 from radproc.filtering import filter_field
+from radproc.radar import nonmet_filter
 from vaimennuskorjain._version import __version__
 
 
@@ -33,16 +34,6 @@ def phidp_base0(radar):
     mask = np.ma.getmaskarray(phidp_corr)
     phidp_corr.mask = np.logical_or(mask, phidp_corr < 0).filled(True)
     radar.add_field_like('PHIDP', 'PHIDPA', phidp_corr, replace_existing=True)
-
-
-def nonmet_filter(radar, rhohv_min=0.7, z_min=0.1):
-    """GateFilter for some non-meteorological targets, especially insects."""
-    gf = pyart.correct.GateFilter(radar)
-    gf.exclude_below('DBZH', 10)
-    gf.exclude_above('ZDR', 2, op='and')
-    gf.exclude_below('DBZH', z_min)
-    gf.exclude_below('RHOHV', rhohv_min)
-    return gf
 
 
 def correct_attenuation_zphi(radar, ml=None, band='C', **kws):
