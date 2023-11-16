@@ -5,8 +5,8 @@ import os
 import pyart
 import matplotlib.pyplot as plt
 
-from radproc.io import read_h5
-from vaimennuskorjain import correct_attenuation_zphi, read_odim_ml
+from radproc.io import read_h5, read_odim_ml
+from vaimennuskorjain import correct_attenuation_zphi
 
 
 if __name__ == '__main__':
@@ -15,10 +15,10 @@ if __name__ == '__main__':
     #fname = os.path.expanduser('~/data/pvol/202307081105_fivih_PVOL.h5')
     #fname = os.path.expanduser('~/data/pvol/202307030835_fivih_PVOL.h5')
     #fname = os.path.expanduser('~/data/pvol/202307010920_fivih_PVOL.h5')
-    #fname = os.path.expanduser('~/data/polar/fivan/201708121600_radar.polar.fivan.h5')
+    fname = os.path.expanduser('~/data/polar/fivan/201708121600_radar.polar.fivan.h5')
     #fname = os.path.expanduser('~/data/polar/fikor/202308071610_radar.polar.fikor.h5')
     #fname = os.path.expanduser('~/data/polar/fikor/202308080540_radar.polar.fikor.h5')
-    fname = os.path.expanduser('~/data/polar/fikor/202308080405_radar.polar.fikor.h5')
+    #fname = os.path.expanduser('~/data/polar/fikor/202308080405_radar.polar.fikor.h5')
     ml = read_odim_ml(fname)
     radar = read_h5(fname, file_field_names=True)
     correct_attenuation_zphi(radar, ml=ml, smooth_window_len=6)
