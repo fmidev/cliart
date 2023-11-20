@@ -18,6 +18,29 @@ def add_single_sweep_field(radar, data, sweep: int, name: str, **kws) -> None:
     radar.add_field(name, field, **kws)
 
 
+def angular_diff(data):
+    z_ray0 = data[0].reshape(1, data.shape[1])
+    return np.ma.abs(np.ma.diff(data, axis=0, append=z_ray0))
+
+
+def attn_quality_field(radar, add_field=False) -> dict:
+    aqdata = []
+    for sweep in radar.sweep_number['data']:
+        dbzhas = radar.get_field(sweep, 'DBZHAS')
+        dbzh = radar.get_field(sweep, 'DBZH')
+        diffz = angular_diff(dbzh)
+        diffza = angular_diff(dbzhas)
+        mz = np.ma.median(diffz, axis=1)
+        mza = np.ma.median(diffza, axis=1)
+        aq = np.ma.column_stack([mz-mza]*500)
+        aq.mask = np.logical_or(aq.mask, dbzhas.mask)
+        aqdata.append(aq)
+    aq_field = dict(data=np.ma.concatenate(aqdata))
+    if add_field:
+        radar.add_field('AQ', aq_field)
+    return aq_field
+
+
 if __name__ == '__main__':
     plt.close('all')
     sweep = 0
@@ -25,11 +48,7 @@ if __name__ == '__main__':
     ml = read_odim_ml(fname)
     radar = read_h5(fname, file_field_names=True)
     correct_attenuation_zphi(radar, ml=ml)
-    dbzhas = radar.get_field(sweep, 'DBZHAS')
-    dbzh = radar.get_field(sweep, 'DBZH')
-    z_ray0 = dbzh[0].reshape(1, dbzh.shape[1])
-    diff = np.ma.abs(np.ma.diff(dbzh, axis=0, append=z_ray0))
-    add_single_sweep_field(radar, diff, sweep, 'DIFF')
+    attn_quality_field(radar, add_field=True)
     #
     figz, axz = plt.subplots(nrows=3, ncols=3, figsize=(17, 17), dpi=110, sharex=True, sharey=True)
     display = pyart.graph.RadarDisplay(radar)
@@ -44,5 +63,5 @@ if __name__ == '__main__':
     display.plot('RHOHV', ax=axz[2,0], vmin=0.8, vmax=1, **kws)
     display.plot('PIA', ax=axz[2,1], vmin=0, vmax=8, **kws)
     display.plot('SPEC', ax=axz[2,2], vmin=0, vmax=0.5, **kws)
-    display.plot('DIFF', ax=axz[1,2], vmin=0, vmax=10, **kws)
+    display.plot('AQ', ax=axz[1,2], vmin=-2, vmax=2, cmap='Spectral', **kws)
     figz.tight_layout()
