@@ -4,10 +4,9 @@ import os
 
 import pyart
 import matplotlib.pyplot as plt
-import numpy as np
 
 from radproc.io import read_h5, read_odim_ml
-from vaimennuskorjain import correct_attenuation_zphi
+from vaimennuskorjain import correct_attenuation_zphi, attn_quality_field
 
 
 def add_single_sweep_field(radar, data, sweep: int, name: str, **kws) -> None:
@@ -16,29 +15,6 @@ def add_single_sweep_field(radar, data, sweep: int, name: str, **kws) -> None:
     afield[res_ang*sweep:res_ang*(sweep+1), :] = data
     field = dict(data=afield)
     radar.add_field(name, field, **kws)
-
-
-def angular_diff(data):
-    z_ray0 = data[0].reshape(1, data.shape[1])
-    return np.ma.abs(np.ma.diff(data, axis=0, append=z_ray0))
-
-
-def attn_quality_field(radar, add_field=False) -> dict:
-    aqdata = []
-    for sweep in radar.sweep_number['data']:
-        dbzhas = radar.get_field(sweep, 'DBZHAS')
-        dbzh = radar.get_field(sweep, 'DBZH')
-        diffz = angular_diff(dbzh)
-        diffza = angular_diff(dbzhas)
-        mz = np.ma.median(diffz, axis=1)
-        mza = np.ma.median(diffza, axis=1)
-        aq = np.ma.column_stack([mz-mza]*500)
-        aq.mask = np.logical_or(aq.mask, dbzhas.mask)
-        aqdata.append(aq)
-    aq_field = dict(data=np.ma.concatenate(aqdata))
-    if add_field:
-        radar.add_field('AQ', aq_field)
-    return aq_field
 
 
 if __name__ == '__main__':

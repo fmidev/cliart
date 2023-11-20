@@ -6,7 +6,7 @@ from pyart.graph.common import generate_radar_time_begin
 
 from radproc.io import read_h5, write_h5, read_odim_ml
 from radproc.tools import source2dict
-from vaimennuskorjain import correct_attenuation_zphi, ATTN_FIELDS
+from vaimennuskorjain import correct_attenuation_zphi, attn_quality_field, ATTN_FIELDS
 from vaimennuskorjain._version import __version__
 
 
@@ -39,7 +39,7 @@ def _out_help():
               multiple=True, help=_field_help(), default=list(ATTN_FIELDS))
 @click.option('--orig/--no-orig', default=True, show_default=False,
               help='Include/exclude all data from the input file. Included by default.')
-@click.option('--ml', metavar='HEIGHT', help='override melting layer height [meters]', type=float)
+@click.option('--ml', metavar='METERS', help='override melting layer cut-off altitude', type=float)
 @click.version_option(version=__version__, prog_name='vaimennuskorjain')
 def vaimennuskorjain(inputfile, output_file, ml, field, orig):
     """Perform attenuation correction on INPUTFILE.
@@ -55,5 +55,7 @@ def vaimennuskorjain(inputfile, output_file, ml, field, orig):
     if orig:
         field = list(radar.fields) + list(field)
     correct_attenuation_zphi(radar, ml)
+    if 'AQ' in field:
+        attn_quality_field(radar, add_field=True)
     outfile = output_file.format(timestamp=tstamp, site=site)
     write_h5(radar, outfile, inputfile=inputfile, field_names=field)
