@@ -6,19 +6,15 @@ from pyart.graph.common import generate_radar_time_begin
 
 from radproc.io import read_h5, write_h5, read_odim_ml
 from radproc.tools import source2dict
+from radproc.cli import gen_help
 from vaimennuskorjain import correct_attenuation_zphi, attn_quality_field, ATTN_FIELDS
 from vaimennuskorjain._version import __version__
-
-
-def _gen_help(base, variables):
-    varstr = ''.join('\n{}: {}'.format(key, val) for key, val in variables.items())
-    return base+'\n\n\b'+varstr
 
 
 def _field_help():
     base = 'Variable to write. This option can be selected multiple times. '\
         'The default is to write all variables.'
-    return _gen_help(base, ATTN_FIELDS)
+    return gen_help(base, ATTN_FIELDS)
 
 
 def _out_help():
@@ -27,7 +23,7 @@ def _out_help():
     base = 'Output file path. '\
         'Special variables can be used enclosed in curly brackets, e.g. '\
         '/path/to/{site}/file_{timestamp}.h5.'
-    return _gen_help(base, variables)
+    return gen_help(base, variables)
 
 
 @click.command()
