@@ -25,7 +25,7 @@ ATTN_FIELDS = {'DBZHA': 'DBZH with attenuation correction',
                'AQ': 'relative azimuthal smoothness of DBZHAS to DBZH'}
 
 
-def phidp_base0(radar: Radar):
+def phidp_base0(radar: Radar) -> None:
     """shifted and filtered phidp field that starts from zero degrees"""
     gf = nonmet_filter(radar, rhohv_min=0.9)
     phidp_corr = radar.fields['PHIDP']['data'].copy()
@@ -38,15 +38,22 @@ def phidp_base0(radar: Radar):
     radar.add_field_like('PHIDP', 'PHIDPA', phidp_corr, replace_existing=True)
 
 
-def correct_attenuation_zphi(radar: Radar, ml=None, band='C', **kws):
+def correct_attenuation_zphi(radar: Radar, ml: Optional[float] = None, band: str = 'C', **kws: Any) -> None:
     """attenuation correction using PyART zphi implementation"""
     phidp_base0(radar) # TODO: read from metadata when available
     a_coef, beta, c, d = _param_attzphi_table()[band]
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDPA')
-    spec, pia, cor_z, specd, pida, cor_zdr = pyart.correct.calculate_attenuation_zphi(radar,
-         temp_ref='fixed_fzl', fzl=ml, doc=15, gatefilter=nonmet_filter(radar),
-         **namekws, **attnparams, **kws)
+    spec, pia, cor_z, specd, pida, cor_zdr = pyart.correct.calculate_attenuation_zphi(
+        radar,
+        temp_ref='fixed_fzl',
+        fzl=ml,
+        doc=15,
+        gatefilter=nonmet_filter(radar),
+        **namekws,
+        **attnparams,
+        **kws
+    )
     radar.add_field('DBZHA', cor_z)
     radar.add_field('PIA', pia, replace_existing=True)
     radar.add_field('SPEC', spec)
@@ -54,17 +61,23 @@ def correct_attenuation_zphi(radar: Radar, ml=None, band='C', **kws):
     radar.add_field('ZDRA', cor_zdr)
     radar.add_field('SPECD', specd)
     smoothen_attn_cor(radar)
-    smoothen_attn_cor(radar, pia_field='PIDA', smooth_pia_field='PIDAS',
-                      src_field='ZDR', template_field='ZDRA', dest_field='ZDRAS')
+    smoothen_attn_cor(
+        radar,
+        pia_field='PIDA',
+        smooth_pia_field='PIDAS',
+        src_field='ZDR',
+        template_field='ZDRA',
+        dest_field='ZDRAS'
+    )
 
 
-def smoothen_attn_cor(radar: Radar, pia_field='PIA', smooth_pia_field='PIAS',
-                      src_field='DBZH', template_field='DBZHA',
-                      dest_field='DBZHAS'):
+def smoothen_attn_cor(radar: Radar, pia_field: str = 'PIA', smooth_pia_field: str = 'PIAS',
+                      src_field: str = 'DBZH', template_field: str = 'DBZHA',
+                      dest_field: str = 'DBZHAS') -> None:
     """angular smooting on attenuation correction"""
     filter_field(radar, pia_field, field_name=smooth_pia_field,
                  filterfun=savgol_filter, axis=0, window_length=6, polyorder=3)
-    data = radar.fields[src_field]['data']+radar.fields[smooth_pia_field]['data']
+    data = radar.fields[src_field]['data'] + radar.fields[smooth_pia_field]['data']
     radar.add_field_like(template_field, dest_field, data=data, replace_existing=True)
 
 
@@ -73,7 +86,7 @@ def _angular_diff(data):
     return np.ma.abs(np.ma.diff(data, axis=0, append=z_ray0))
 
 
-def attn_quality_field(radar: Radar, add_field=False) -> dict:
+def attn_quality_field(radar: Radar, add_field: bool = False) -> dict:
     """relative azimuthal smoothness of DBZHAS to DBZH"""
     aqdata = []
     for sweep in radar.sweep_number['data']:
