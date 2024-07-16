@@ -48,7 +48,7 @@ def correct_attenuation_zphi(radar: Radar, ml=None, band='C', **kws):
          temp_ref='fixed_fzl', fzl=ml, doc=15, gatefilter=nonmet_filter(radar),
          **namekws, **attnparams, **kws)
     radar.add_field('DBZHA', cor_z)
-    radar.add_field('PIA', pia)
+    radar.add_field('PIA', pia, replace_existing=True)
     radar.add_field('SPEC', spec)
     radar.add_field('PIDA', pida)
     radar.add_field('ZDRA', cor_zdr)
