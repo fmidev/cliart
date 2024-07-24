@@ -1,12 +1,20 @@
 # SPDX-FileCopyrightText: 2023-present Jussi Tiira <jussi.tiira@fmi.fi>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier:
+
+"""vaimennuskorjain: attenuation correction for weather radar data"""
+
+# Built-in modules
+from typing import Any, Optional
+
+# Third party modules
 import pyart.correct
 import numpy as np
 from pyart.correct.attenuation import _param_attzphi_table
 from pyart.core import Radar
 from scipy.signal import savgol_filter
 
+# FMI modules
 from radproc.filtering import filter_field
 from radproc.radar import nonmet_filter
 from vaimennuskorjain._version import __version__
