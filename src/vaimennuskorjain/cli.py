@@ -4,7 +4,7 @@
 import click
 from pyart.graph.common import generate_radar_time_begin
 
-from radproc.io import read_h5, write_h5, read_odim_ml
+from radproc.io import read_h5, write_h5, read_odim_ml, read_odim_phidp_base
 from radproc.tools import source2dict
 from radproc.cli import gen_help
 from vaimennuskorjain import correct_attenuation_zphi, attn_quality_field, ATTN_FIELDS
@@ -44,13 +44,14 @@ def vaimennuskorjain(inputfile, output_file, ml, field, orig):
     Melting layer height is read from the HDF5 attribute how/freeze."""
     if ml is None:
         ml = read_odim_ml(inputfile)
+    phi0 = read_odim_phidp_base(inputfile)
     radar = read_h5(inputfile, file_field_names=True)
     t = generate_radar_time_begin(radar)
     tstamp = t.strftime('%Y%m%d%H%M')
     site = source2dict(radar.metadata['source'])['NOD']
     if orig:
         field = list(radar.fields) + list(field)
-    correct_attenuation_zphi(radar, ml)
+    correct_attenuation_zphi(radar, ml, phidp_base=phi0)
     if 'AQ' in field:
         attn_quality_field(radar, add_field=True)
     outfile = output_file.format(timestamp=tstamp, site=site)

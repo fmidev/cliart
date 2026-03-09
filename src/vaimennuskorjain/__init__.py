@@ -33,13 +33,15 @@ ATTN_FIELDS = {'DBZHA': 'DBZH with attenuation correction',
                'AQ': 'relative azimuthal smoothness of DBZHAS to DBZH'}
 
 
-def phidp_base0(radar: Radar) -> None:
+def phidp_base0(radar: Radar, phidp_base: Optional[float] = None) -> None:
     """shifted and filtered phidp field that starts from zero degrees"""
     gf = nonmet_filter(radar, rhohv_min=0.9)
     phidp_corr = radar.fields['PHIDP']['data'].copy()
     phidp_valid = phidp_corr.copy()
     phidp_valid.mask = np.ma.logical_or(gf.gate_excluded, np.isnan(phidp_corr)).filled(True)
-    phidp_base = np.ma.median(phidp_valid.min(axis=1))
+    if phidp_base is None:
+        print('Warning: phidp_base not provided, calculating from data. This may be inaccurate.')
+        phidp_base = np.ma.median(phidp_valid.min(axis=1))
     phidp_corr -= phidp_base
     mask = np.ma.getmaskarray(phidp_corr)
     phidp_corr.mask = np.logical_or(mask, phidp_corr < 0).filled(True)
