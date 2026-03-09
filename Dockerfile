@@ -1,11 +1,18 @@
-FROM python:3
+FROM python:3 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /build
+
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
 
 COPY . .
 
-RUN pip install -U pip && pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
+
+FROM python:3-slim
+
+COPY --from=builder /venv /venv
 
 ENV PYART_QUIET=1
 
-ENTRYPOINT ["/usr/local/bin/vaimennuskorjain"]
+ENTRYPOINT ["/venv/bin/vaimennuskorjain"]
