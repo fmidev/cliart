@@ -60,7 +60,8 @@ def phidp_base0(radar: Radar, phidp_base: Optional[float] = None) -> None:
     radar.add_field_like('PHIDP', 'PHIDPA', phidp_corr, replace_existing=True)
 
 
-def correct_attenuation_zphi(radar: Radar, ml: Optional[float] = None, band: str = 'C', **kws: Any) -> None:
+def correct_attenuation_zphi(radar: Radar, ml: Optional[float] = None,
+                             band: str = 'C', phidp_base: Optional[float] = None, **kws: Any) -> None:
     """Apply ZPHI attenuation correction and add corrected fields to the radar object.
 
     Uses the Py-ART implementation of the ZPHI method to estimate specific
@@ -92,7 +93,7 @@ def correct_attenuation_zphi(radar: Radar, ml: Optional[float] = None, band: str
         **kws: Additional keyword arguments forwarded to
             :func:`pyart.correct.calculate_attenuation_zphi`.
     """
-    phidp_base0(radar) # TODO: read from metadata when available
+    phidp_base0(radar, phidp_base=phidp_base)
     a_coef, beta, c, d = _param_attzphi_table()[band]
     attnparams = dict(a_coef=a_coef, beta=beta, c=c, d=d)
     namekws = dict(refl_field='DBZH', zdr_field='ZDR', phidp_field='PHIDPA')
