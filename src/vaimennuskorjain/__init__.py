@@ -193,8 +193,8 @@ def attn_quality_field(radar: Radar, add_field: bool = False) -> dict:
         diffza = _angular_diff(dbzhas)
         mz = np.ma.median(diffz, axis=1)
         mza = np.ma.median(diffza, axis=1)
-        aq = np.ma.column_stack([mz-mza]*500)
-        aq.mask = np.logical_or(aq.mask, dbzhas.mask)
+        aq = np.ma.column_stack([mz-mza]*dbzhas.shape[1])
+        aq.mask = np.logical_or(np.ma.getmaskarray(aq), np.ma.getmaskarray(dbzhas))
         aqdata.append(aq)
     aq_field = dict(data=np.ma.concatenate(aqdata))
     if add_field:
